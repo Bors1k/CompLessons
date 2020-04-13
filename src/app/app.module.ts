@@ -7,6 +7,7 @@ import { LoginComponent } from './component/login/login.component';
 import { RegisterComponent } from './component/register/register.component';
 import { VerifyEmailComponent } from './component/verify-email/verify-email.component';
 import { ProfileComponent } from './component/profile/profile.component';
+import { CoursesComponent } from './component/courses/courses.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { ProfileComponent } from './component/profile/profile.component';
     LoginComponent,
     RegisterComponent,
     VerifyEmailComponent,
-    ProfileComponent
+    ProfileComponent,
+    CoursesComponent
   ],
   imports: [
     BrowserModule,
