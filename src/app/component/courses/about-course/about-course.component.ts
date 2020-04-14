@@ -46,7 +46,7 @@ export class AboutCourseComponent implements AfterViewInit  {
         console.error("Ошибка получения документа ", err);
       })
     }
-  SubOnCourse(){
+  async SubOnCourse(){
     if(!this.authServ.isLogged){
         this.alert.nativeElement.innerHTML += 
         `<div class="alert alert-warning" role="alert">
@@ -57,8 +57,20 @@ export class AboutCourseComponent implements AfterViewInit  {
         }, 5000);
     }
     else {
-      this.afs.doc(`users/${this.authServ.userData.uid}/myCourses/${this.id}`).set({
-        uspevaemost: "vremennaya"
+      let Progress = [];
+      await this.afs.doc(`courses/${this.group}/courses/${this.id}`).get().toPromise()
+      .then(doc=>{
+        doc.data().timestable.forEach(time => {
+          Progress.push({
+            time: time.seconds,
+            rating: 0
+          })
+        });
+
+      })
+      await this.afs.doc(`users/${this.authServ.userData.uid}/myCourses/${this.id}`).set({
+        group_id: this.group,
+        progress: Progress
       })
       
     }
