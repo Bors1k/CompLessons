@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Courses, subCourses } from '../../interfaces/courses';
 
@@ -12,13 +11,21 @@ export class CoursesComponent{
 
   public coursesCollection: Courses[] = [];
   public subcourses: subCourses[] = [];
+  public showSpinner: boolean = true;
 
   constructor(public afs: AngularFirestore) { 
-    this.afs.collection("courses").get().toPromise()
-    .then(snapshot => {
-      snapshot.forEach(async doc => {
+    this.LoadingCoursesData();
+  }
 
-        await this.afs.collection(`courses/${doc.id}/courses`).get().toPromise().then(
+  MoveToCourse(id: string){
+    alert("Course id => " + id);
+  }
+  async LoadingCoursesData(){ //Функция для получения данных о курсах из БД
+    await this.afs.collection("courses").get().toPromise()
+    .then(snapshot => {
+      snapshot.forEach(async doc => { //получаем сначала документа ГруппыКусов, содержащей подкурсы
+
+        await this.afs.collection(`courses/${doc.id}/courses`).get().toPromise().then( //получаем подкурсы по id ГруппыКурсов
           snapshot=>{
             snapshot.forEach(subDoc=>{              
               this.subcourses.push({
@@ -27,12 +34,10 @@ export class CoursesComponent{
                 description: subDoc.data().description,
                 index_url: subDoc.data().index_url
               })
-              console.log(this.subcourses);
             })
           }
         )
 
-        console.log(doc.id, '=>', doc.data());
         this.coursesCollection.push({
           id: doc.id,
           name: doc.data().name,
@@ -40,13 +45,10 @@ export class CoursesComponent{
         })
         this.subcourses = [];
       });
-      console.log(this.coursesCollection);
     })
     .catch(err => {
       console.log('Error getting documents', err);
     });
-
-
-
+    this.showSpinner = false;
   }
 }

@@ -1,57 +1,21 @@
 <div class="container">
-    <div class="accordion" id="accordionExample" style="padding-top: 10px;">
 
-        <div class="card" *ngfor="let courseGroup of coursesCollection">
-          <div class="card-header" id="headingOne">
-            <h2 class="mb-0">
-              <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                {{courseGroup.name}}
-              </button>
-            </h2>
-          </div>
-      
-          <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample" *ngFor="let subCourse of courseGroup.subCourses">
-            <div class="card-body">
-                <div class="card">
-                    <div class="card-body">
-                      <h5 class="card-title">{{subCourse.name}}</h5>
-                      <p class="card-text">{{subCourse.description}}</p>
-                      <a href="#" class="btn btn-primary" style="float: right;">Перейти к курсу</a>
-                    </div>
-                  </div>
-            </div>
+  <div style="display: flex; align-items: center; justify-content: center; height: 100vh;" *ngIf="showSpinner">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+
+
+
+      <div *ngFor="let courseGroup of coursesCollection" class="border" style="padding: 10px; margin: 10px 0px;">
+        <h1 style="text-align: center;">{{courseGroup.name}}</h1>
+        <div class="card border-primary mb-2"  *ngFor="let courses of courseGroup.subCourses">
+          <div class="card-header">{{courses.name}}</div>
+          <div class="card-body text-primary">
+            <p class="card-text">{{courses.description}}</p>
+            <button type="button" class="btn btn-primary" style="float: right;" (click)="MoveToCourse(courses.id)">Перейти к курсу</button>
           </div>
         </div>
-<!-- 
-        <div class="card">
-          <div class="card-header" id="headingTwo">
-            <h2 class="mb-0">
-              <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                Компьютерная графика,3Д,анимация
-              </button>
-            </h2>
-          </div>
-          <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-            <div class="card-body">
-              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header" id="headingThree">
-            <h2 class="mb-0">
-              <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                Информационная безопасность
-              </button>
-            </h2>
-          </div>
-          <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-            <div class="card-body">
-              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-            </div>
-          </div>
-        </div> -->
-
       </div>
 </div>
