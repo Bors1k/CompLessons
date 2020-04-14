@@ -9,12 +9,12 @@
 
 
       <div *ngFor="let courseGroup of coursesCollection" class="border" style="padding: 10px; margin: 10px 0px;">
-        <h1 style="text-align: center;">{{courseGroup.name}}</h1>
+        <h2 style="text-align: center;">{{courseGroup.name}}</h2>
         <div class="card border-primary mb-2"  *ngFor="let courses of courseGroup.subCourses">
           <div class="card-header">{{courses.name}}</div>
           <div class="card-body text-primary">
             <p class="card-text">{{courses.description}}</p>
-            <button type="button" class="btn btn-primary" style="float: right;" (click)="MoveToCourse(courses.id)">Перейти к курсу</button>
+            <button type="button" class="btn btn-primary" style="float: right;" (click)="MoveToCourse(courseGroup.id,courses.id)">Перейти к курсу</button>
           </div>
         </div>
       </div>

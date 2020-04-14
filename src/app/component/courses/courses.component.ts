@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Courses, subCourses } from '../../interfaces/courses';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-courses',
@@ -13,12 +14,13 @@ export class CoursesComponent{
   public subcourses: subCourses[] = [];
   public showSpinner: boolean = true;
 
-  constructor(public afs: AngularFirestore) { 
+  constructor(public afs: AngularFirestore,public router: Router) { 
     this.LoadingCoursesData();
   }
 
-  MoveToCourse(id: string){
-    alert("Course id => " + id);
+  MoveToCourse(group: string, id: string){
+    console.log("Course id => " + id, "  GroupId => " + group);
+    this.router.navigate([`courses/${group}/${id}`]);  //переходим к компоненту AboutCourses, передавая ГруппуКусов и id курса в качестве параметров
   }
   async LoadingCoursesData(){ //Функция для получения данных о курсах из БД
     await this.afs.collection("courses").get().toPromise()
@@ -28,7 +30,7 @@ export class CoursesComponent{
         await this.afs.collection(`courses/${doc.id}/courses`).get().toPromise().then( //получаем подкурсы по id ГруппыКурсов
           snapshot=>{
             snapshot.forEach(subDoc=>{              
-              this.subcourses.push({
+              this.subcourses.push({ //пушим все подкурсы в массив
                 id: subDoc.id,
                 name: subDoc.data().name,
                 description: subDoc.data().description,
@@ -38,12 +40,12 @@ export class CoursesComponent{
           }
         )
 
-        this.coursesCollection.push({
+        this.coursesCollection.push({ //id, название ГруппыКурсов, и массив подкурсов в один общий массив
           id: doc.id,
           name: doc.data().name,
           subCourses: this.subcourses
         })
-        this.subcourses = [];
+        this.subcourses = []; // очищаем массив подкурсов для следующей ГруппыКурсов
       });
     })
     .catch(err => {

@@ -25,10 +25,10 @@ export class AuthService {
   ) {
     
     this.afAuth.authState.subscribe(user=>{
+      console.log(user);
       if(user){
-        if(this.router.routerState.snapshot.url == "/"){
-          this.router.navigate(["/profile"]);
-        }
+        this.router.navigate(["/profile"]);
+
         this.userData = user;
         localStorage.setItem('user',JSON.stringify(this.userData));
         JSON.parse(localStorage.getItem('user'));
@@ -69,6 +69,7 @@ export class AuthService {
 
   onSignIn(email, password) {
     console.log("try login")
+    console.log(this.userData)
     return this.afAuth.signInWithEmailAndPassword(email, password)
       .then((result) => {
         console.log(result);

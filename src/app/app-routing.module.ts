@@ -5,6 +5,7 @@ import { RegisterComponent } from './component/register/register.component';
 import { VerifyEmailComponent } from './component/verify-email/verify-email.component';
 import { ProfileComponent } from './component/profile/profile.component';
 import { CoursesComponent } from './component/courses/courses.component';
+import { AboutCourseComponent } from './component/courses/about-course/about-course.component';
 
 
 const routes: Routes = [
@@ -12,7 +13,8 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent},
   { path: 'verify-email', component: VerifyEmailComponent},
   { path: 'profile', component: ProfileComponent},
-  { path: 'courses', component: CoursesComponent}
+  { path: 'courses', component: CoursesComponent},
+  { path: 'courses/:group/:id', component: AboutCourseComponent}
 ];
 
 @NgModule({
