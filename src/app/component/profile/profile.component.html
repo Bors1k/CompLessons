@@ -6,8 +6,8 @@
             <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">Мои курсы</a>
             <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Messages</a>
             <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</a>
-            
-        </div>
+            <button type="button" class="btn btn-outline-danger" (click)="authService.SignOut()">Выйти</button>
+          </div>
         </div>
         <div class="col-9">
           <div class="tab-content" id="v-pills-tabContent">

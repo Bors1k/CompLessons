@@ -1,28 +1,28 @@
 <div class="container">
     <div class="accordion" id="accordionExample" style="padding-top: 10px;">
 
-        <div class="card">
+        <div class="card" *ngfor="let courseGroup of coursesCollection">
           <div class="card-header" id="headingOne">
             <h2 class="mb-0">
               <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                WEB
+                {{courseGroup.name}}
               </button>
             </h2>
           </div>
       
-          <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+          <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample" *ngFor="let subCourse of courseGroup.subCourses">
             <div class="card-body">
                 <div class="card">
                     <div class="card-body">
-                      <h5 class="card-title">Типа курс</h5>
-                      <p class="card-text">Типа небольшое описание. With supporting text below as a natural lead-in to additional content.</p>
+                      <h5 class="card-title">{{subCourse.name}}</h5>
+                      <p class="card-text">{{subCourse.description}}</p>
                       <a href="#" class="btn btn-primary" style="float: right;">Перейти к курсу</a>
                     </div>
                   </div>
             </div>
           </div>
         </div>
-
+<!-- 
         <div class="card">
           <div class="card-header" id="headingTwo">
             <h2 class="mb-0">
@@ -51,7 +51,7 @@
               Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
             </div>
           </div>
-        </div>
+        </div> -->
 
       </div>
 </div>

@@ -9,6 +9,12 @@ import { VerifyEmailComponent } from './component/verify-email/verify-email.comp
 import { ProfileComponent } from './component/profile/profile.component';
 import { CoursesComponent } from './component/courses/courses.component';
 
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireModule  } from '@angular/fire';
+import { AngularFireStorageModule } from '@angular/fire/storage'
+import { environment } from '../environments/environment';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -20,7 +26,11 @@ import { CoursesComponent } from './component/courses/courses.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireAuthModule,
+    AngularFireStorageModule,
+    AngularFirestoreModule
   ],
   providers: [],
   bootstrap: [AppComponent]

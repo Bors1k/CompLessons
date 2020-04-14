@@ -1,15 +1,52 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { Courses, subCourses } from '../../interfaces/courses';
 
 @Component({
   selector: 'app-courses',
   templateUrl: './courses.component.html',
   styleUrls: ['./courses.component.scss']
 })
-export class CoursesComponent implements OnInit {
+export class CoursesComponent{
 
-  constructor() { }
+  public coursesCollection: Courses[] = [];
+  public subcourses: subCourses[] = [];
 
-  ngOnInit(): void {
+  constructor(public afs: AngularFirestore) { 
+    this.afs.collection("courses").get().toPromise()
+    .then(snapshot => {
+      snapshot.forEach(async doc => {
+
+        await this.afs.collection(`courses/${doc.id}/courses`).get().toPromise().then(
+          snapshot=>{
+            snapshot.forEach(subDoc=>{              
+              this.subcourses.push({
+                id: subDoc.id,
+                name: subDoc.data().name,
+                description: subDoc.data().description,
+                index_url: subDoc.data().index_url
+              })
+              console.log(this.subcourses);
+            })
+          }
+        )
+
+        console.log(doc.id, '=>', doc.data());
+        this.coursesCollection.push({
+          id: doc.id,
+          name: doc.data().name,
+          subCourses: this.subcourses
+        })
+        this.subcourses = [];
+      });
+      console.log(this.coursesCollection);
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+    });
+
+
+
   }
-
 }
