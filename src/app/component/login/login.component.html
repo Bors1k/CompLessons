@@ -1,6 +1,7 @@
 <div class="container">
-    <div class="row justify-content-center align-items-center" style="height: 100vh;">
+    <div class="row justify-content-center align-items-center" style="height: 93vh;">
         <div class="col-12" style="text-align: center; max-width: 500px;">
+          <h2>Войти в аккаунт</h2>
             <form>
                 <div class="form-group">
                   <label for="exampleInputEmail1">Email address</label>
@@ -8,7 +9,7 @@
                 </div>
                 <div class="form-group">
                   <label for="exampleInputPassword1">Password</label>
-                  <input type="password" class="form-control" id="exampleInputPassword1" #userPassword required>
+                  <input type="password" class="form-control" id="exampleInputPassword1" autocomplete="on" #userPassword required>
                 </div>
                 <button type="button" class="btn btn-primary" (click)="authService.onSignIn(userEmail.value,userPassword.value)">Login</button>
                 <div>

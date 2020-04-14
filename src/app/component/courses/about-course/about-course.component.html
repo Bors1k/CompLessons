@@ -1,4 +1,6 @@
 <div class="container">
+  <div style="position: absolute; margin: 10px;" #alerts>
+  </div>
     <div style="display: flex; align-items: center; justify-content: center; height: 100vh;" *ngIf="showSpinner">
         <div class="spinner-border text-primary" role="status">
           <span class="sr-only">Loading...</span>
@@ -7,4 +9,5 @@
     <div #frame>
     </div>
     <button type="button" class="btn btn-primary" *ngIf="!showSpinner" (click)="SubOnCourse()">Записаться</button>
+    
 </div>

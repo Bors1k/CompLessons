@@ -11,8 +11,23 @@
         </div>
         <div class="col-9">
           <div class="tab-content" id="v-pills-tabContent">
-            <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
-                <!-- Типа профиль{{authService.userDBdata.email}} -->
+            <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab" *ngIf="UserData as user">
+              <div style="display: flex; flex-direction: column; ">
+                <form>
+                  <div class="form-group">
+                    <label for="InputName">Имя</label>
+                    <input type="text" class="form-control" id="InputName" #InputName>
+                  </div>
+                  <div class="form-group">
+                    <label for="InputSurename">Фамилия</label>
+                    <input type="text" class="form-control" id="InputSurename" #InputName>
+                  </div>
+                </form>
+                  <p><b>email:</b> {{UserData.email}}</p>
+                  <p><b>email verify:</b> {{UserData.emailVerified}}</p>
+                  <p><b>uid:</b> {{UserData.uid}}</p>
+                  <button type="button" class="btn btn-primary" (click)="UpdateProfile(UserData.uid)">Сохранить</button>
+              </div>
             </div>
             <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
 

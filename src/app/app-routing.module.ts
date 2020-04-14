@@ -6,9 +6,11 @@ import { VerifyEmailComponent } from './component/verify-email/verify-email.comp
 import { ProfileComponent } from './component/profile/profile.component';
 import { CoursesComponent } from './component/courses/courses.component';
 import { AboutCourseComponent } from './component/courses/about-course/about-course.component';
+import { StartComponent } from './component/start/start.component';
 
 
 const routes: Routes = [
+  { path: '', component: StartComponent},
   { path: 'login', component: LoginComponent},
   { path: 'register', component: RegisterComponent},
   { path: 'verify-email', component: VerifyEmailComponent},

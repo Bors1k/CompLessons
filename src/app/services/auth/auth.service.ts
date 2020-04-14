@@ -22,17 +22,16 @@ export class AuthService {
     public afAuth: AngularFireAuth, // Inject Firebase auth service
     public router: Router,  
     public ngZone: NgZone // NgZone service to remove outside scope warning
-  ) {
-    
+  ){
     this.afAuth.authState.subscribe(user=>{
-      console.log(user);
       if(user){
-        this.router.navigate(["/profile"]);
 
         this.userData = user;
         localStorage.setItem('user',JSON.stringify(this.userData));
         JSON.parse(localStorage.getItem('user'));
         this.isLogged = true;
+
+        this.router.navigate(["/profile"]);
       }
       else{
         localStorage.setItem('user',null);
@@ -40,7 +39,6 @@ export class AuthService {
         this.isLogged = false;
       }
     })
-
    }
 
    onSignUp(email, password){
@@ -68,26 +66,26 @@ export class AuthService {
   }
 
   onSignIn(email, password) {
-    console.log("try login")
-    console.log(this.userData)
     return this.afAuth.signInWithEmailAndPassword(email, password)
-      .then((result) => {
-        console.log(result);
-        this.ngZone.run(() => {
-          this.router.navigate(['/profile']);
-        });
-
-        this.afs.collection('users').doc(`${result.user.uid}`).get().toPromise()
+      .then(async (result) => {
+        await localStorage.setItem('user',JSON.stringify(this.userData));
+        await this.afs.collection('users').doc(`${result.user.uid}`).get().toPromise()
         .then(doc=>{
           if (!doc.exists) {
             console.log('No such document!');
           } else {
+            console.log(doc.data());
             this.userDBdata = doc.data();
             this.userDBdata.emailVerified = result.user.emailVerified;
             this.SetUserData(this.userDBdata);
             this.isLogged = true;
           }
         })
+
+        this.ngZone.run(() => {
+          
+          this.router.navigate(['/profile']);
+        });
          
       }).catch((error) => {
         window.alert(error.message)
@@ -112,9 +110,7 @@ export class AuthService {
       emailVerified: user.emailVerified
     }
     
-    return userRef.set(userData, {
-      merge: true
-    })
+    return userRef.update(userData)
   }
 
   SignOut() {

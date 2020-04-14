@@ -11,6 +11,8 @@ export class LoginComponent implements OnInit {
   constructor(public authService: AuthService) { }
 
   ngOnInit(): void {
+    if(this.authService.isLogged){
+      this.authService.router.navigate(['/profile']);
+    }
   }
-
 }
