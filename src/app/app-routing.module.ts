@@ -7,6 +7,7 @@ import { ProfileComponent } from './component/profile/profile.component';
 import { CoursesComponent } from './component/courses/courses.component';
 import { AboutCourseComponent } from './component/courses/about-course/about-course.component';
 import { StartComponent } from './component/start/start.component';
+import { TeachProfileComponent } from './component/profile/teach-profile/teach-profile.component';
 
 
 const routes: Routes = [
@@ -15,6 +16,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent},
   { path: 'verify-email', component: VerifyEmailComponent},
   { path: 'profile', component: ProfileComponent},
+  { path: 'teach-profile', component: TeachProfileComponent},
   { path: 'courses', component: CoursesComponent},
   { path: 'courses/:group/:id', component: AboutCourseComponent}
 ];

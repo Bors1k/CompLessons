@@ -17,6 +17,7 @@ import { AngularFireStorageModule } from '@angular/fire/storage'
 import { environment } from '../environments/environment';
 import { AboutCourseComponent } from './component/courses/about-course/about-course.component';
 import { StartComponent } from './component/start/start.component';
+import { TeachProfileComponent } from './component/profile/teach-profile/teach-profile.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { StartComponent } from './component/start/start.component';
     ProfileComponent,
     CoursesComponent,
     AboutCourseComponent,
-    StartComponent
+    StartComponent,
+    TeachProfileComponent
   ],
   imports: [
     BrowserModule,

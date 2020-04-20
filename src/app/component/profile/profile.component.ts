@@ -27,7 +27,9 @@ export class ProfileComponent implements OnInit {
           }
           else {
             this.UserData = doc.data();
-            console.log(this.UserData);
+            if(this.UserData.account_type == 'teacher'){
+              this.route.navigate(['/teach-profile']);
+            }
           }
         }).catch(err=>{
           console.error("Ошибка получения документа ", err);
@@ -55,20 +57,23 @@ export class ProfileComponent implements OnInit {
     .then(snapshot=>{
       snapshot.forEach(async doc=>{
         await this.authService.afs.doc(`courses/${doc.data().group_id}/courses/${doc.id}`).get().toPromise()
-        .then(CourseDoc=>{
-          this.MyCoursesList.push(
-            {
-              id: doc.id,
-              metods: CourseDoc.data().MetodMaterials,
-              name: CourseDoc.data().name,
-              timestable: CourseDoc.data().timestable,
-              ...doc.data()
-            });
+        .then(async CourseDoc=>{
+          await this.authService.afs.doc(`courses/${doc.data().group_id}/courses/${doc.id}/students/${this.UserData.uid}`).get().toPromise()
+          .then(rating=>{
+            this.MyCoursesList.push(
+              {
+                id: doc.id,
+                metods: CourseDoc.data().MetodMaterials,
+                name: CourseDoc.data().name,
+                timestable: CourseDoc.data().timestable,
+                ...doc.data(),
+                ...rating.data()
+              });
+          })
         })
       })
     })
     console.log(this.MyCoursesList);
-   
   }
 
 }

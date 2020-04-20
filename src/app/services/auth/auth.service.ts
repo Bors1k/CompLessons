@@ -49,16 +49,13 @@ export class AuthService {
         email: result.user.email,
         displayName: result.user.displayName,
         photoURL: result.user.photoURL,
-        emailVerified: result.user.emailVerified
+        emailVerified: result.user.emailVerified,
+        account_type: 'student'
       }
 
       this.SetUserData(localUser);
 
       // this.SendVerificationMail();
-
-      setTimeout(() => {
-        this.onSignIn(email, password);
-      }, 5000);
 
     }).catch((error)=>{
       window.alert(error.message);
@@ -93,9 +90,9 @@ export class AuthService {
   }
 
   // SendVerificationMail(){
-  //   return this.afAuth.auth.currentUser.sendEmailVerification()
-  //   .then(() => {
-  //     this.isLogged = false;
+  //   return this.afAuth.currentUser.then(()=>{
+  //     this.SendVerificationMail()
+  //     this.isLogged = false;                 //временно не работает
   //     this.router.navigate(['/veryf-email']);
   //   })
   // }
@@ -107,10 +104,11 @@ export class AuthService {
       email: user.email,
       displayName: user.displayName,
       photoURL: user.photoURL,
-      emailVerified: user.emailVerified
+      emailVerified: user.emailVerified,
+      account_type: user.account_type
     }
     
-    return userRef.update(userData)
+    return userRef.set(userData,{merge: true});
   }
 
   SignOut() {
