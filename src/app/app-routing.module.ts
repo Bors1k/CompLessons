@@ -8,6 +8,7 @@ import { CoursesComponent } from './component/courses/courses.component';
 import { AboutCourseComponent } from './component/courses/about-course/about-course.component';
 import { StartComponent } from './component/start/start.component';
 import { TeachProfileComponent } from './component/profile/teach-profile/teach-profile.component';
+import { AdminProfileComponent } from './component/profile/admin-profile/admin-profile.component';
 
 
 const routes: Routes = [
@@ -18,7 +19,8 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent},
   { path: 'teach-profile', component: TeachProfileComponent},
   { path: 'courses', component: CoursesComponent},
-  { path: 'courses/:group/:id', component: AboutCourseComponent}
+  { path: 'courses/:group/:id', component: AboutCourseComponent},
+  { path: 'admin-profile', component: AdminProfileComponent}
 ];
 
 @NgModule({

@@ -23,24 +23,35 @@ export class TeachProfileComponent implements OnInit {
       this.route.navigate(['/login']);
     }
     else {
-      await this.authService.afs.doc(`users/${JSON.parse(localStorage.getItem('user')).uid}`).get().toPromise()
+      this.UserData = this.authService.userDBdata;
+      if(this.UserData != null){
+        if (this.UserData.account_type == 'teacher') {
+          this.route.navigate(['/teach-profile']);
+        }
+        else if(this.UserData.account_type == 'admin'){
+          this.route.navigate(['/admin-profile'])
+        }
+      }
+      else {
+        this.authService.afs.doc(`users/${this.authService.userData.uid}`).get().toPromise()
         .then(doc => {
-          if (!doc.exists) {
-            console.log('Нет такого доумента')
-          }
-          else {
             this.UserData = doc.data();
             if (this.UserData.account_type == 'teacher') {
               this.route.navigate(['/teach-profile']);
             }
-          }
-        }).catch(err => {
-          console.error("Ошибка получения документа ", err);
-        })
+            else if(this.UserData.account_type == 'admin'){
+              this.route.navigate(['/admin-profile'])
+            }
+        });
+      }
     }
   }
+
   UpdateProfile(name, surename, uid: string) {
     if (this.authService.isLogged) {
+      this.UserData.name = name;
+      this.UserData.surename = surename;
+      localStorage.setItem('userDB',JSON.stringify(this.UserData));
       this.authService.afs.doc(`users/${uid}`).update({
         name: name,
         surename: surename

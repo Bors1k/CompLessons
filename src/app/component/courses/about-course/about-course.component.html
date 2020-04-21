@@ -1,13 +1,50 @@
 <div class="container">
   <div style="position: absolute; margin: 10px;" #alerts>
   </div>
+
     <div style="display: flex; align-items: center; justify-content: center; height: 100vh;" *ngIf="showSpinner">
         <div class="spinner-border text-primary" role="status">
           <span class="sr-only">Loading...</span>
         </div>
     </div>
+
+    <form *ngIf="authServ.userDBdata.account_type == 'admin' && CourseInfo as course" style="margin-top: 10px;">
+      <div class="form-group">
+        <label for="nameInput">Имя курса</label>
+        <input type="text" class="form-control" id="nameInput" [(value)]="course.name" #inputName>
+      </div>
+      <div class="form-group">
+        <label for="descriptionArea">Краткое описание</label>
+        <textarea class="form-control" id="descriptionArea" rows="3" [(value)]="course.description" #areaDescritption></textarea>
+      </div>
+      <div class="form-group">
+      <label for="teacherSelect">Краткое описание</label>
+      <select class="custom-select" id="teacherSelect" #selectTeacher>
+        <option  value="null" selected>Выберите одного из преподавателей</option>
+        <option *ngFor="let teacher of Teachers" [(value)]="teacher.uid" >{{teacher.name + ' ' + teacher.surename}}</option>
+      </select>
+      </div>
+      <button  type="button" class="btn btn-primary" (click)="UpdateCourseInfo(inputName.value,areaDescritption.value,selectTeacher.value)">Обновить</button>
+      <!-- <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">data</th>
+            <th scope="col">time</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of UsersList">
+            <th scope="row">{{}}</th>
+            <td>{{}}</td>
+            </td>
+          </tr>
+        </tbody>
+      </table> -->
+    </form>
+
     <div #frame>
     </div>
-    <button type="button" class="btn btn-primary" *ngIf="!showSpinner" (click)="SubOnCourse()" [disabled]="!SubDisable">Записаться</button>
+    <button  type="button" class="btn btn-primary" *ngIf="!showSpinner && authServ.userDBdata.account_type != 'admin'" (click)="SubOnCourse()" [disabled]="SubDisable">Записаться</button>
     
 </div>

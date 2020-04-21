@@ -15,27 +15,35 @@ export class ProfileComponent implements OnInit {
 
   constructor(public authService: AuthService, public route: Router) { }
 
-  async ngOnInit() {
-      if(!this.authService.isLogged){
-        this.route.navigate(['/login']);
+  ngOnInit() {
+    if (!this.authService.isLogged) {
+      this.route.navigate(['/login']);
+    }
+    else {
+      this.UserData = this.authService.userDBdata;
+      if(this.UserData != null){
+        if (this.UserData.account_type == 'teacher') {
+          this.route.navigate(['/teach-profile']);
+        }
+        else if(this.UserData.account_type == 'admin'){
+          this.route.navigate(['/admin-profile'])
+        }
       }
-      else{
-        await this.authService.afs.doc(`users/${JSON.parse(localStorage.getItem('user')).uid}`).get().toPromise()
-        .then(doc=>{
-          if(!doc.exists){
-            console.log('Нет такого доумента')
-          }
-          else {
+      else {
+        this.authService.afs.doc(`users/${this.authService.userData.uid}`).get().toPromise()
+        .then(doc => {
             this.UserData = doc.data();
-            if(this.UserData.account_type == 'teacher'){
+            if (this.UserData.account_type == 'teacher') {
               this.route.navigate(['/teach-profile']);
             }
-          }
-        }).catch(err=>{
-          console.error("Ошибка получения документа ", err);
-        })
+            else if(this.UserData.account_type == 'admin'){
+              this.route.navigate(['/admin-profile'])
+            }
+        });
+      }
     }
   }
+
   UpdateProfile(name, surename, uid: string){
     if(this.authService.isLogged){
       this.authService.afs.doc(`users/${uid}`).update({

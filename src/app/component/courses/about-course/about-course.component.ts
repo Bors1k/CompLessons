@@ -1,9 +1,8 @@
-import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { AuthService } from 'src/app/services/auth/auth.service';
-import { tick } from '@angular/core/testing';
 
 @Component({
   selector: 'app-about-course',
@@ -21,16 +20,54 @@ export class AboutCourseComponent implements AfterViewInit {
   index_url: string;
   showSpinner: boolean = true;
   SubDisable: boolean = false;
+  CourseInfo: any;
+  Teachers: any = [];
 
   constructor(private route: ActivatedRoute, public afs: AngularFirestore, public authServ: AuthService) {
     this.routeSubscription = route.params.subscribe(params => { this.id = params['id']; this.group = params["group"] });
+
+    this.afs.doc(`courses/${this.group}/courses/${this.id}`).get().toPromise()
+      .then(doc => {
+        this.CourseInfo = doc.data();
+        console.log(this.CourseInfo);
+      })
+    this.afs.collection(`users`).get().toPromise()
+      .then(Users => {
+        Users.forEach(user => {
+          if (user.data().account_type == "teacher") {
+            this.Teachers.push(user.data());
+          }
+        })
+      })
   }
 
   async ngAfterViewInit() {
-    console.log(this.frameCont);
     await this.LoadPageFromStorage();
     await (() => { this.frameCont.nativeElement.innerHTML = `<iframe style="margin-top: 10px; height: 80vh; width: 100%;" *ngIf="!showSpinner" src='${this.index_url}' frameborder="0"></iframe>` })();
     this.showSpinner = false;
+  }
+
+  UpdateCourseInfo(name: string, description: string, teacher_uid: string) {
+    console.log(name)
+    console.log(description)
+    console.log(teacher_uid)
+
+    const progressRef: AngularFirestoreDocument<any> = this.afs.doc(`courses/${this.group}/courses/${this.id}`);
+
+    if (teacher_uid == "null") {
+      progressRef.set({
+        name: name,
+        description: description
+      }, { merge: true });
+    }
+    else {
+      progressRef.set({
+        name: name,
+        description: description,
+        teacher_uid: teacher_uid
+      }, { merge: true });
+    }
+
   }
 
   async LoadPageFromStorage() {
@@ -42,17 +79,17 @@ export class AboutCourseComponent implements AfterViewInit {
         }
         else {
           this.index_url = doc.data().index_url;
-          console.log(doc.data().teacher_uid)
-          if(doc.data().teacher_uid == this.authServ.userData.id) {
-          this.SubDisable = true; 
+          // console.log(this.authServ.userDBdata.account_type)
+          if (this.authServ.userDBdata.account_type == 'teacher') {
+            this.SubDisable = true;
           }
-          else {this.SubDisable = false;}
+          // else {this.SubDisable = false;}
 
         }
       }).catch(err => {
         console.error("Ошибка получения документа ", err);
       })
-    
+
   }
   async SubOnCourse() {
     if (!this.authServ.isLogged) {
@@ -71,7 +108,7 @@ export class AboutCourseComponent implements AfterViewInit {
           if (doc.data().timestable != undefined) {
             doc.data().timestable.forEach(time => {
               Progress.push({
-                time: time.seconds,
+                time: time,
                 rating: 0
               })
             });
@@ -96,7 +133,7 @@ export class AboutCourseComponent implements AfterViewInit {
       }, 5000);
     }
 
-    console.log("Подписываемся на курс с id => " + this.id);
-    }
-  
+    // console.log("Подписываемся на курс с id => " + this.id);
+  }
+
 }

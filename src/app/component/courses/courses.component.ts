@@ -19,7 +19,7 @@ export class CoursesComponent{
   }
 
   MoveToCourse(group: string, id: string){
-    console.log("Course id => " + id, "  GroupId => " + group);
+    // console.log("Course id => " + id, "  GroupId => " + group);
     this.router.navigate([`courses/${group}/${id}`]);  //переходим к компоненту AboutCourses, передавая ГруппуКусов и id курса в качестве параметров
   }
   async LoadingCoursesData(){ //Функция для получения данных о курсах из БД

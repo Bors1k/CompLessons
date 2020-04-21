@@ -19,6 +19,7 @@ import { environment } from '../environments/environment';
 import { AboutCourseComponent } from './component/courses/about-course/about-course.component';
 import { StartComponent } from './component/start/start.component';
 import { TeachProfileComponent } from './component/profile/teach-profile/teach-profile.component';
+import { AdminProfileComponent } from './component/profile/admin-profile/admin-profile.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { TeachProfileComponent } from './component/profile/teach-profile/teach-p
     CoursesComponent,
     AboutCourseComponent,
     StartComponent,
-    TeachProfileComponent
+    TeachProfileComponent,
+    AdminProfileComponent
   ],
   imports: [
     BrowserModule,

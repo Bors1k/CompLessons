@@ -11,7 +11,7 @@
           aria-controls="v-pills-profile" aria-selected="false" (click)="GetMyCourses()">Мои курсы</a>
         <!-- <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Messages</a>
               <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</a> -->
-        <button type="button" class="btn btn-outline-danger" (click)="authService.SignOut()">Выйти</button>
+        <button type="button" class="btn btn-outline-danger"  style="margin-top: 10px;" (click)="authService.SignOut()">Выйти</button>
       </div>
     </div>
     <div class="col-9">
@@ -71,7 +71,7 @@
                         </thead>
                         <tbody>
                           <tr *ngFor="let day of student.progress; let x = index">
-                            <th scope="row">{{day.time * 1000 | date: 'short'}}
+                            <th scope="row">{{day.time.seconds * 1000 | date: 'short'}}
 
                             </th>
                             <td (dblclick)="onEdit(day)">{{day.rating}}

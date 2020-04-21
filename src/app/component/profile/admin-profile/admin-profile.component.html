@@ -1,0 +1,85 @@
+<div class="container" style="padding-top: 20px;">
+    <div style="position: absolute; margin: 10px; z-index: 10; left: 50%;" #alert>
+  
+    </div>
+    <div class="row">
+      <div class="col-3">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+          <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab"
+            aria-controls="v-pills-home" aria-selected="true">Профиль</a>
+          <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab"
+            aria-controls="v-pills-profile" aria-selected="false" (click)="GetUsersList()">Список пользователей</a>
+          <!-- <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Messages</a>
+                <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</a> -->
+          <button type="button" class="btn btn-outline-danger"  style="margin-top: 10px;" (click)="authService.SignOut()">Выйти</button>
+        </div>
+      </div>
+      <div class="col-9">
+
+        <div class="tab-content" id="v-pills-tabContent">
+
+          <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab"
+            *ngIf="UserData as user">
+            <div style="display: flex; flex-direction: column; ">
+              <form>
+                <div class="form-group">
+                  <label for="InputName">Имя</label>
+                  <input type="text" class="form-control" id="InputName" [(value)]="user.name" #InputName>
+                </div>
+                <div class="form-group">
+                  <label for="InputSurename">Фамилия</label>
+                  <input type="text" class="form-control" id="InputSurename" [(value)]="user.surename" #InputSureName>
+                </div>
+              </form>
+              <p><b>uid:</b> {{user.uid}}</p>
+              <p><b>Account type:</b> {{user.account_type}}</p>
+              <p><b>email:</b> {{user.email}}</p>
+              <p><b>email verify:</b> {{user.emailVerified}}</p>
+              <button type="button" class="btn btn-primary"
+                (click)="UpdateProfile(InputName.value,InputSureName.value,user.uid)">Сохранить</button>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">email</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Фаилия</th>
+                    <th scope="col">Тип аккаунта</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let user of UsersList">
+                    <th scope="row">{{user.email}}</th>
+                    <td>{{user.name}}</td>
+                    <td>{{user.surename}}</td>
+                    <td (dblclick)="onEdit(user)">{{user.account_type}}
+                        <form *ngIf="editState && itemToEdit == user">
+                            <div class="form-group">
+                                <select class="custom-select" #TypeSelect>
+                                    <option value="student">student</option>
+                                    <option value="teacher">teacher</option>
+                                    <option value="admin">admin</option>
+                                </select>
+                            </div>
+                            <button type="button" class="btn btn-primary" (click)="UpdateAccountType(TypeSelect.value)">Обновить</button>
+                            <button type="button" class="btn btn-warning" style="margin-left: 5px;" (click)="onCancel()">Отменить</button>
+                        </form>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+           <!-- <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+    
+            </div>
+            <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+    
+            </div> -->
+        </div>
+
+      </div>
+    </div>
+  </div>
