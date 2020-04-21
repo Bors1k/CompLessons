@@ -39,7 +39,7 @@
         </div>
         <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
           <div class="border" *ngFor="let course of MyCoursesList"
-            style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+            style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
             <div>
               <h4>{{course.name}}</h4>
               <h5>Расписание</h5>
@@ -70,17 +70,18 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr *ngFor="let day of student.progress">
+                          <tr *ngFor="let day of student.progress; let x = index">
                             <th scope="row">{{day.time * 1000 | date: 'short'}}
 
                             </th>
-                            <td>{{day.rating}}
-                              <form>
+                            <td (dblclick)="onEdit(day)">{{day.rating}}
+                              <form *ngIf="editState && itemToEdit == day">
                                 <div class="form-group">
-                                  <input type="text" class="form-control" [(value)]="day.rating" aria-describedby="emailHelp">
+                                  <input type="text" class="form-control" [(ngModel)]="day.rating" aria-describedby="emailHelp" name="rating">
                                 </div>
 
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="button" class="btn btn-primary" (click)="UpdateRating(student,course.id, course.group_id)">Обновить</button>
+                                <button type="button" class="btn btn-warning" style="margin-left: 5px;" (click)="onCancel()">Отменить</button>
                               </form>
                             </td>
                           </tr>

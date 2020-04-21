@@ -8,6 +8,6 @@
     </div>
     <div #frame>
     </div>
-    <button type="button" class="btn btn-primary" *ngIf="!showSpinner" (click)="SubOnCourse()">Записаться</button>
+    <button type="button" class="btn btn-primary" *ngIf="!showSpinner" (click)="SubOnCourse()" [disabled]="!SubDisable">Записаться</button>
     
 </div>

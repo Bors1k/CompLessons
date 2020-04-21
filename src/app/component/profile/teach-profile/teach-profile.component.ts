@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Router } from '@angular/router';
+import { AngularFirestoreDocument } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-teach-profile',
@@ -12,81 +13,100 @@ export class TeachProfileComponent implements OnInit {
   @ViewChild('alert') alert: ElementRef;
   public UserData: any;
   public MyCoursesList: any = [];
+  public editState: boolean = false;
+  public itemToEdit: any;
 
   constructor(public authService: AuthService, public route: Router) { }
 
   async ngOnInit() {
-    if(!this.authService.isLogged){
+    if (!this.authService.isLogged) {
       this.route.navigate(['/login']);
     }
-    else{
+    else {
       await this.authService.afs.doc(`users/${JSON.parse(localStorage.getItem('user')).uid}`).get().toPromise()
-      .then(doc=>{
-        if(!doc.exists){
-          console.log('Нет такого доумента')
-        }
-        else {
-          this.UserData = doc.data();
-          if(this.UserData.account_type == 'teacher'){
-            this.route.navigate(['/teach-profile']);
+        .then(doc => {
+          if (!doc.exists) {
+            console.log('Нет такого доумента')
           }
-        }
-      }).catch(err=>{
-        console.error("Ошибка получения документа ", err);
-      })
+          else {
+            this.UserData = doc.data();
+            if (this.UserData.account_type == 'teacher') {
+              this.route.navigate(['/teach-profile']);
+            }
+          }
+        }).catch(err => {
+          console.error("Ошибка получения документа ", err);
+        })
+    }
   }
-}
-UpdateProfile(name, surename, uid: string){
-  if(this.authService.isLogged){
-    this.authService.afs.doc(`users/${uid}`).update({
-      name: name,
-      surename: surename
-    });
-    this.alert.nativeElement.innerHTML += 
-      `<div class="alert alert-success" role="alert">
+  UpdateProfile(name, surename, uid: string) {
+    if (this.authService.isLogged) {
+      this.authService.afs.doc(`users/${uid}`).update({
+        name: name,
+        surename: surename
+      });
+      this.alert.nativeElement.innerHTML +=
+        `<div class="alert alert-success" role="alert">
       Информация успешно обновлена
       </div>`
       setTimeout(() => {
-        this.alert.nativeElement.innerHTML = '';  
+        this.alert.nativeElement.innerHTML = '';
       }, 3000);
+    }
   }
-}
-async GetMyCourses(){
-  this.MyCoursesList = [];
-  let ratingList = [];
-  await this.authService.afs.collection(`users/${this.UserData.uid}/myCourses`).get().toPromise()
-  .then(Courses=>{
-    Courses.forEach(async doc=>{
-      await this.authService.afs.doc(`courses/${doc.data().group_id}/courses/${doc.id}`).get().toPromise()
-      .then(async CourseDoc=>{
-        await this.authService.afs.collection(`courses/${doc.data().group_id}/courses/${doc.id}/students`).get().toPromise()
-        .then(Students=>{
-          Students.forEach(async rating=>{
-            await this.authService.afs.doc(`users/${rating.id}`).get().toPromise()
-            .then(student=>{
-              ratingList.push({
-                userID: rating.id,
-                progress: rating.data().progress,
-                name: student.data().name,
-                surename: student.data().surename
+
+
+  async GetMyCourses() {
+    this.MyCoursesList = [];
+    
+    this.authService.afs.collection(`users/${this.UserData.uid}/myCourses`).get().toPromise()
+    .then(Courses=>{
+      Courses.forEach(async doc=>{
+        let ratingList = []
+        await this.authService.afs.doc(`courses/${doc.data().group_id}/courses/${doc.id}`).get().toPromise()
+        .then(async CourseDoc=>{
+          await this.authService.afs.collection(`courses/${doc.data().group_id}/courses/${doc.id}/students`).get().toPromise()
+          .then(async Students=>{
+            Students.forEach(async rating=>{
+              await this.authService.afs.doc(`users/${rating.id}`).get().toPromise()
+              .then(student=>{
+                ratingList.push({
+                  userID: rating.id,
+                  progress: rating.data().progress,
+                  name: student.data().name,
+                  surename: student.data().surename
+                })
               })
             })
-          })
-          this.MyCoursesList.push(
+            await this.MyCoursesList.push(
             {
-              id: doc.id,
-              metods: CourseDoc.data().MetodMaterials,
-              name: CourseDoc.data().name,
-              timestable: CourseDoc.data().timestable,
-              ...doc.data(),
-              progressList: ratingList
+                id: doc.id,
+                metods: CourseDoc.data().MetodMaterials,
+                name: CourseDoc.data().name,
+                timestable: CourseDoc.data().timestable,
+                ...doc.data(),
+                progressList: ratingList
             });
+          })
         })
       })
     })
-  })
-  console.log(this.MyCoursesList);
- 
-}
+
+  }
+
+  UpdateRating(student: any, course_id: string, group_id: string) {
+    const progressRef: AngularFirestoreDocument<any> = this.authService.afs.doc(`courses/${group_id}/courses/${course_id}/students/${student.userID}`)
+    progressRef.set({ progress: student.progress }, { merge: true });
+    this.onCancel();
+  }
+
+  onEdit(item) {
+    this.editState = true;
+    this.itemToEdit = item;
+  }
+  onCancel() {
+    this.editState = false;
+    this.itemToEdit = null;
+  }
 
 }

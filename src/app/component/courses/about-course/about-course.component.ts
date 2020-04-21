@@ -20,6 +20,7 @@ export class AboutCourseComponent implements AfterViewInit {
   private routeSubscription: Subscription;
   index_url: string;
   showSpinner: boolean = true;
+  SubDisable: boolean = false;
 
   constructor(private route: ActivatedRoute, public afs: AngularFirestore, public authServ: AuthService) {
     this.routeSubscription = route.params.subscribe(params => { this.id = params['id']; this.group = params["group"] });
@@ -41,10 +42,17 @@ export class AboutCourseComponent implements AfterViewInit {
         }
         else {
           this.index_url = doc.data().index_url;
+          console.log(doc.data().teacher_uid)
+          if(doc.data().teacher_uid == this.authServ.userData.id) {
+          this.SubDisable = true; 
+          }
+          else {this.SubDisable = false;}
+
         }
       }).catch(err => {
         console.error("Ошибка получения документа ", err);
       })
+    
   }
   async SubOnCourse() {
     if (!this.authServ.isLogged) {
@@ -86,9 +94,9 @@ export class AboutCourseComponent implements AfterViewInit {
       setTimeout(() => {
         this.alert.nativeElement.innerHTML = '';
       }, 5000);
-
     }
-    console.log("Подписываемся на курс с id => " + this.id);
 
-  }
+    console.log("Подписываемся на курс с id => " + this.id);
+    }
+  
 }

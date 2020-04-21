@@ -3,8 +3,6 @@ import { AngularFireAuth } from "@angular/fire/auth";
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 
-import * as firebase from 'firebase/app';
-import "@angular/fire/storage";
 import { User } from 'src/app/interfaces/user';
 
 @Injectable({
@@ -55,8 +53,6 @@ export class AuthService {
 
       this.SetUserData(localUser);
 
-      // this.SendVerificationMail();
-
     }).catch((error)=>{
       window.alert(error.message);
     })
@@ -89,13 +85,6 @@ export class AuthService {
       })
   }
 
-  // SendVerificationMail(){
-  //   return this.afAuth.currentUser.then(()=>{
-  //     this.SendVerificationMail()
-  //     this.isLogged = false;                 //временно не работает
-  //     this.router.navigate(['/veryf-email']);
-  //   })
-  // }
   
   SetUserData(user){
     const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);
