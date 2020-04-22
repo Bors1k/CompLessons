@@ -10,35 +10,42 @@ import { User } from 'src/app/interfaces/user';
 })
 export class AuthService {
 
+  //-----------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------Сервис для работы с авторизацией----------------------------------------------------------
+
   userData: any;
   userDBdata: any;
   timeout: number = 5;
   isLogged: boolean = false;
 
   constructor(
-    public afs: AngularFirestore,   // Inject Firestore service
-    public afAuth: AngularFireAuth, // Inject Firebase auth service
-    public router: Router,
+    public afs: AngularFirestore,   // Inject Firestore service для работы с бд
+    public afAuth: AngularFireAuth, // Inject Firebase auth service для работы с авторизацией
+    public router: Router,  // для работы с роутингом
     public ngZone: NgZone // NgZone service to remove outside scope warning
   ) {
-    this.afAuth.authState.subscribe(user => {
-      if (user) {
 
+    
+    //Подписываемся на состояние аутентификации
+    this.afAuth.authState.subscribe(user => {
+      //Проверяем авторизованность, если мы авторизованны
+      if (user) {
         this.userData = user;
-        localStorage.setItem('user', JSON.stringify(this.userData));
-        this.userDBdata = JSON.parse(localStorage.getItem('userDB'));
-        this.isLogged = true;
+        localStorage.setItem('user', JSON.stringify(this.userData));  //то сохраняем локально данные авторизации
+        this.userDBdata = JSON.parse(localStorage.getItem('userDB')); //И достаем основные бд данные по пользователю из локального источника
+        this.isLogged = true; //состояение авторизации делаем true
 
         this.router.navigate(["/profile"]);
       }
-      else {
-        localStorage.setItem('user', null);
-        localStorage.setItem('userDB', null);
-        this.isLogged = false;
+      else { 
+        localStorage.setItem('user', null); // удаляем из локального источника все даннные
+        localStorage.setItem('userDB', null); // 
+        this.isLogged = false; //состояение авторизации делаем false
       }
     })
   }
 
+  //-------------------------------------------Метод для создания нового пользователя----------------------------------------------------------
   onSignUp(email, password) {
     return this.afAuth.createUserWithEmailAndPassword(email, password)
       .then((result) => {
@@ -54,10 +61,11 @@ export class AuthService {
         this.SetUserData(localUser);
 
       }).catch((error) => {
-        window.alert(error.message);
+        window.alert(error.message); //в случае ошибки отправляем error
       })
   }
 
+  //-------------------------------------------Метод для авторизации существующего пользователя-------------------------------------------------
   onSignIn(email, password) {
     return this.afAuth.signInWithEmailAndPassword(email, password)
       .then((result) => {

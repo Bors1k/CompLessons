@@ -11,6 +11,10 @@ import { TeachProfileComponent } from './component/profile/teach-profile/teach-p
 import { AdminProfileComponent } from './component/profile/admin-profile/admin-profile.component';
 
 
+//-----------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------Роутинг компонентов----------------------------------------------------------------------
+
+// маршруты роутинга 
 const routes: Routes = [
   { path: '', component: StartComponent},
   { path: 'login', component: LoginComponent},

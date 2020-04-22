@@ -18,7 +18,7 @@
         <textarea class="form-control" id="descriptionArea" rows="3" [(value)]="course.description" #areaDescritption></textarea>
       </div>
       <div class="form-group">
-      <label for="teacherSelect">Краткое описание</label>
+      <label for="teacherSelect">Выбор преподавателя</label>
       <select class="custom-select" id="teacherSelect" #selectTeacher>
         <option  value="null" selected>Выберите одного из преподавателей</option>
         <option *ngFor="let teacher of Teachers" [(value)]="teacher.uid" >{{teacher.name + ' ' + teacher.surename}}</option>
