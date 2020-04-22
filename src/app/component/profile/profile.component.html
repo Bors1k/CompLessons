@@ -39,11 +39,11 @@
                   <h4>{{course.name}}</h4>
                   <h5>Расписание</h5>
                   <ul *ngFor="let time of course.timestable">
-                    <li>{{time.seconds * 1000 | date:'long' }}</li>
+                    <li>{{time.seconds * 1000 | date: 'dd.MM.yy HH:mm' }}</li>
                   </ul>
                   <h5>Успеваемость</h5>
                   <ul *ngFor="let day of course.progress">
-                    <li><b>Day:</b> {{day.time.seconds * 1000 | date: 'short'}}; <b>Rating:</b> {{day.rating}}</li>
+                    <li><b>Day:</b> {{day.time.seconds * 1000 | date: 'dd.MM.yy HH:mm'}}  <b>Rating:</b> {{day.rating}}</li>
                   </ul>
                   <h5>Методические материалы</h5>
                   <ul *ngFor="let material of course.metods">

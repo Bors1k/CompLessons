@@ -27,7 +27,6 @@ export class AuthService {
         this.userData = user;
         localStorage.setItem('user', JSON.stringify(this.userData));
         this.userDBdata = JSON.parse(localStorage.getItem('userDB'));
-        // console.log(this.userDBdata);
         this.isLogged = true;
 
         this.router.navigate(["/profile"]);
@@ -51,7 +50,7 @@ export class AuthService {
           emailVerified: result.user.emailVerified,
           account_type: 'student'
         }
-
+        localStorage.setItem('user', JSON.stringify(localUser));
         this.SetUserData(localUser);
 
       }).catch((error) => {

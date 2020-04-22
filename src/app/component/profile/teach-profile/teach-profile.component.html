@@ -38,13 +38,13 @@
           </div>
         </div>
         <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-          <div class="border" *ngFor="let course of MyCoursesList"
+          <div class="border" *ngFor="let course of MyCoursesList; let j = index"
             style="display: flex; flex-direction: column; align-items: stretch; text-align: center;">
             <div>
               <h4>{{course.name}}</h4>
               <h5>Расписание</h5>
               <ul *ngFor="let time of course.timestable">
-                <li>{{time.seconds * 1000 | date:'long' }}</li>
+                <li>{{time.seconds * 1000 | date: 'dd.MM.yy HH:mm' }}</li>
               </ul>
               <h5>Успеваемость</h5>
               
@@ -52,15 +52,15 @@
 
                 <div class="card">
 
-                  <div class="card-header" [attr.id]="'heading' + i">
+                  <div class="card-header" [attr.id]="'heading' + j + i">
                     <h5 class="mb-0">
-                      <button class="btn btn-link" type="button" data-toggle="collapse" [attr.data-target]=" '#collapse' + i " aria-expanded="true" [attr.aria-controls]=" 'collapse' + i ">
+                      <button class="btn btn-link" type="button" data-toggle="collapse" [attr.data-target]=" '#collapse'  + j +  i " aria-expanded="true" [attr.aria-controls]=" 'collapse' + j + i ">
                         {{ student.name + ' ' + student.surename }}
                       </button>
                     </h5>
                   </div>
               
-                  <div [attr.id]=" 'collapse' + i " class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                  <div [attr.id]=" 'collapse' + j + i " class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
                     <div class="card-body">
                       <table class="table">
                         <thead>
@@ -71,7 +71,7 @@
                         </thead>
                         <tbody>
                           <tr *ngFor="let day of student.progress; let x = index">
-                            <th scope="row">{{day.time.seconds * 1000 | date: 'short'}}
+                            <th scope="row">{{day.time.seconds * 1000 | date: 'dd.MM.yy HH:mm'}}
 
                             </th>
                             <td (dblclick)="onEdit(day)">{{day.rating}}
