@@ -13,37 +13,45 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 })
 export class AboutCourseComponent implements AfterViewInit {
 
-  @ViewChild('frame') frameCont: ElementRef;
-  @ViewChild('alerts') alert: ElementRef;  
+  //-----------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------Методы для работы с подробной информацией по курсу----------------------------------------
 
-  id: string;
-  group: string;
-  private routeSubscription: Subscription;
-  index_url: string;
-  showSpinner: boolean = true;
-  SubDisable: boolean = false;
-  CourseInfo: any;
-  Teachers: any = [];
+  @ViewChild('frame') frameCont: ElementRef; //просматриваем элемент frame, чтобы отображать html страничку с основной информацией по курсу
+  @ViewChild('alerts') alert: ElementRef;  //просматриваем элемент alert, чтобы добавляеть уведомления на сайте
+
+  id: string; //id курса
+  group: string;//id группы курсов
+  private routeSubscription: Subscription; //отслеживание входящих параметров при роутинге, для получения id и group
+  index_url: string; //ссылка на html страничку
+  showSpinner: boolean = true; //переменная для отображения spinnera во время подгрузки данных из бд
+
+  SubDisable: boolean = false; //переменная для разрешения и запрещения записи на курс
+
+  CourseInfo: any; //объект с информацией по курсу
+  Teachers: any = []; //список преподавателей
   
-  DataOnAdd: boolean = false;
-  editState: boolean = false;
-  DateOnEdit: any;
-  DayOnEdit: string;
-  TimeOnEdit: string;
+  DataOnAdd: boolean = false; //переменная для отображения интерфейса добавления новой даты в расписании
+  editState: boolean = false; //переменная для отображения интерфейса изменения имеющейся даты в расписании
+  DateOnEdit: any; //переменная для сравнения изменяемой даты
+  DayOnEdit: string; //переменная для отображения даты
+  TimeOnEdit: string; //перменная для отображения времени
 
 
-  constructor(private route: ActivatedRoute, 
-              public afs: AngularFirestore,
-              public authServ: AuthService,
+  constructor(private route: ActivatedRoute, // для работы с роутингом 
+              public afs: AngularFirestore, //Inject Firestore service для работы с бд
+              public authServ: AuthService, //инжектим сервис аутентификации
               public afstorage: AngularFireStorage) //Модуль для работы с серверным хранилищем 
-              {
+  {
+    //для получение id и group передаваемые при маршрутизации
     this.routeSubscription = route.params.subscribe(params => { this.id = params['id']; this.group = params["group"] });
 
+    //получаем информацию по курсу и записываем ее в переменную
     this.afs.doc(`courses/${this.group}/courses/${this.id}`).get().toPromise()
       .then(doc => {
         this.CourseInfo = doc.data();
-        console.log(this.CourseInfo);
       })
+      
+    //получаем список преподавателей и записываем в переменную
     this.afs.collection(`users`).get().toPromise()
       .then(Users => {
         Users.forEach(user => {
@@ -54,16 +62,19 @@ export class AboutCourseComponent implements AfterViewInit {
       })
   }
 
+  //-----------------------------------------------Метод вызываемый после инициализации представления---------------------------------------
   async ngAfterViewInit() {
+    //вызываем метод для получения ссылки на html документ
     await this.LoadPageFromStorage();
+    //добавляем iframe с ссылкой на отображаемую страничку, чтобы ее загрузить
     await (() => { this.frameCont.nativeElement.innerHTML = `<iframe style="margin-top: 10px; height: 80vh; width: 100%;" *ngIf="!showSpinner" src='${this.index_url}' frameborder="0"></iframe>` })();
-    this.showSpinner = false;
+    this.showSpinner = false; //прячем spinner
   }
 
   
 
-//-----------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------Методы для работы админа-----------------------------------------------------------------
+
+//------------------------------------------------Методы для работы админа----------------------------------------------------------------//
 
 
 //-------------------------------------------------Измение даты в расписании---------------------------------------------------------------
@@ -101,10 +112,13 @@ OnDataEdit(date){
   this.editState = true;
 }
 
-//функция вызываемая после подтверждения изменений
+//-----------------------------------Функция вызываемая после подтверждения изменений-------------------------------------------------
+
 //вносит локально изменения в дате, и отправляет изменения в базу данных
 OnDataChange(index: any, date: string,time: string){
+  //получаем ссылку на документ курса
   const courseRef: AngularFirestoreDocument<any> = this.afs.doc(`courses/${this.group}/courses/${this.id}`);
+  //создаем объект типа Date, на основе передоваемый данных
   const NewDate = new Date(date + ' ' + time);
 
   this.CourseInfo.timestable[index] = {
@@ -117,17 +131,21 @@ OnDataChange(index: any, date: string,time: string){
     this.OnCancel();
 }
 
-//Отмена измения даты
+//-----------------------------------Отмена измения даты-------------------------------------------------------------------------------
+
 //Обнуляем дату на изменение и состояние измение на false
 OnCancel(){
   this.DateOnEdit = null;
   this.editState = false;
 }
 
-//Удаление даты из расписания
+//-----------------------------------------------------Удаление даты из расписания------------------------------------------------------------
+
 //вызывает alert с подтверждением, и при подтверждении удаляет локально дату и отправляет на сервер
 OnDelete(index){
+   //получаем ссылку на документ курса
   const courseRef: AngularFirestoreDocument<any> = this.afs.doc(`courses/${this.group}/courses/${this.id}`);
+
   if(confirm("Вы уверены?")){
     this.CourseInfo.timestable.splice(index,1);
     courseRef.set({
@@ -139,10 +157,13 @@ OnDelete(index){
 
 //-----------------------------------------------------Добавление даты в расписание------------------------------------------------------------
 
-//Проверяет на нулевость массив расписания и пушит локально новую дату, после чего отправляет изменеия на сервер;
+//Проверяет на нулевость массив расписания и пушит локально новую дату, после чего отправляет изменения на сервер;
   OnAddDate(date: string,time: string){
+    //получаем ссылку на документ курса
     const courseRef: AngularFirestoreDocument<any> = this.afs.doc(`courses/${this.group}/courses/${this.id}`);
+    //создаем объект типа Date, на основе передоваемый данных
     const NewDate = new Date(date + ' ' + time);
+    
     if(this.CourseInfo.timestable == undefined || this.CourseInfo.timestable == null){
       this.CourseInfo.timestable = [];
       this.CourseInfo.timestable.push(
@@ -170,9 +191,10 @@ OnDelete(index){
 //если да, то мы отсылаем новые id преподавателя,имя и описание на сервер
   UpdateCourseInfo(name: string, description: string, teacher_uid: string) {
 
+    //получаем ссылку на документ курса
     const CourseRef: AngularFirestoreDocument<any> = this.afs.doc(`courses/${this.group}/courses/${this.id}`);
+    //получаем ссылку на документ преподавателя
     const TeacherCourseRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${teacher_uid}/myCourses/${this.id}`);
-    // const OldTeacherRef: 
 
     if (teacher_uid == "null") {
       CourseRef.set({
@@ -194,41 +216,50 @@ OnDelete(index){
     }
 
   }
-  async onUploadHTML(event){ //загрузка картинки в профиль
 
-    const file = event.target.files[0];
-    var storageRef = this.afstorage.storage.ref();
-    const courseRef: AngularFirestoreDocument<any> = this.afs.doc(`courses/${this.group}/courses/${this.id}`);
+  //-----------------------------------------------------Обновление html странички с основной информацией-----------------------------------------------
 
-    var mountainImagesRef = storageRef.child(`CoursesPage/${this.id}/index.html`);
+  async onUploadHTML(event){ 
+
+    const file = event.target.files[0]; //получаем передаваемый файл
+    var storageRef = this.afstorage.storage.ref(); //получаем ссылку на хранилище
+    const courseRef: AngularFirestoreDocument<any> = this.afs.doc(`courses/${this.group}/courses/${this.id}`); //получаем ссылку документ курса
+
+    var htmlFileRef = storageRef.child(`CoursesPage/${this.id}/index.html`); //получаем ссылку на файл в хранилище
   
-    await mountainImagesRef.put(file).then(function(snapshot) {
+    await htmlFileRef.put(file).then(function(snapshot) {//отправляем файл
         console.log('Uploaded a blob or file!');
       });   
-    await mountainImagesRef.getDownloadURL().then((obj)=>{
+    await htmlFileRef.getDownloadURL().then((obj)=>{//получаем ссылку на сам файл, чтобы дабавить его в бд и обновить отображаемую страничку
       this.index_url = obj;
     })
-    await courseRef.set({
+    await courseRef.set({ //обновляем ссылку в бд
       index_url: this.index_url
-    },{merge: true});
+    },{merge: true});//отправляем новую ссылку в бд, устанавливая свойство merge => true
+    //что позволяет затрагивать только указанные данные, и не изменять другие данные
     
-    this.frameCont.nativeElement.innerHTML = `<iframe style="margin-top: 10px; height: 80vh; width: 100%;" *ngIf="!showSpinner" src='${this.index_url}' frameborder="0"></iframe>`
+    //обновляен отображаемую html страничку
+    this.frameCont.nativeElement.innerHTML =  `<iframe style="margin-top: 10px; height: 80vh; width: 100%;"
+                                           *ngIf="!showSpinner" src='${this.index_url}' frameborder="0"></iframe>`;
+    
 
    }
 
-//-----------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------Методы для общей работы странички--------------------------------------------------------
+
+//------------------------------------------------Методы для общей работы странички--------------------------------------------------------//
+
+//------------------------------------------------Загрузка основной странички с хранилища---------------------------------------------------
   async LoadPageFromStorage() {
 
-    await this.afs.doc(`courses/${this.group}/courses/${this.id}`).get().toPromise()
+    await this.afs.doc(`courses/${this.group}/courses/${this.id}`).get().toPromise() //обращение к документу курса в БД 
       .then(doc => {
         if (!doc.exists) {
           console.log('Нет такого доумента')
         }
         else {
-          this.index_url = doc.data().index_url;
+          this.index_url = doc.data().index_url; //получаем ссылку для оторбражения html странички
           if (this.authServ.userDBdata.account_type == 'teacher') {
-            this.SubDisable = true;
+            this.SubDisable = true; // для преподавателей отключаем возможность записаться
           }
 
         }
@@ -237,17 +268,18 @@ OnDelete(index){
       })
 
   }
+  //------------------------------------------------Метод вызываемый при попытке записаться на курс-----------------------------------------------
   async SubOnCourse() {
-    if (!this.authServ.isLogged) {
+    if (!this.authServ.isLogged) { //если мы не вошли в аккаунт, отправляется уведомление об этом
       this.alert.nativeElement.innerHTML +=
         `<div class="alert alert-warning" role="alert">
         Прежде чем записать на курс, необходимо <a routerLink="/login" class="alert-link">войти/зарегестрироватсься</a>
         </div>`
       setTimeout(() => {
-        this.alert.nativeElement.innerHTML = '';
+        this.alert.nativeElement.innerHTML = ''; //после 5 сек оно пропадает 
       }, 5000);
     }
-    else {
+    else {//если все в порядке, генерируется успеваемость по имеющимся данным
       let Progress = [];
       await this.afs.doc(`courses/${this.group}/courses/${this.id}`).get().toPromise()
         .then(doc => {
@@ -262,20 +294,23 @@ OnDelete(index){
 
         })
 
+      //после чего успеваемость добавляется в бд курса
       await this.afs.doc(`courses/${this.group}/courses/${this.id}/students/${this.authServ.userData.uid}`).set({
         progress: Progress
       })
 
+      //добавляем курс в список курсов студента
       await this.afs.doc(`users/${this.authServ.userData.uid}/myCourses/${this.id}`).set({
         group_id: this.group
       })
 
+      //отправляем уведомление об успешной записи на курс
       this.alert.nativeElement.innerHTML +=
         `<div class="alert alert-success" role="alert">
         Запись на курс прошла успешно
         </div>`
       setTimeout(() => {
-        this.alert.nativeElement.innerHTML = '';
+        this.alert.nativeElement.innerHTML = ''; //закрываем уведомление через 5 сек
       }, 5000);
     }
   }

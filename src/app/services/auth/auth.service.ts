@@ -13,10 +13,9 @@ export class AuthService {
   //-----------------------------------------------------------------------------------------------------------------------------------------
   //-----------------------------------------------Сервис для работы с авторизацией----------------------------------------------------------
 
-  userData: any;
-  userDBdata: any;
-  timeout: number = 5;
-  isLogged: boolean = false;
+  userData: any; //данные из состояния аутентификации
+  userDBdata: any; //данные из состояния аутентификации
+  isLogged: boolean = false;  //состояние авторизации
 
   constructor(
     public afs: AngularFirestore,   // Inject Firestore service для работы с бд
@@ -47,55 +46,54 @@ export class AuthService {
 
   //-------------------------------------------Метод для создания нового пользователя----------------------------------------------------------
   onSignUp(email, password) {
-    return this.afAuth.createUserWithEmailAndPassword(email, password)
-      .then((result) => {
-        let localUser: User = {
+    return this.afAuth.createUserWithEmailAndPassword(email, password) //возвращаеам Promise создания нового пользователя
+      .then((result) => { //результат создания нового пользователя
+        let localUser: User = { //создаем локально в функции пользователя, присваивая ему все необходимые свойства
           uid: result.user.uid,
           email: result.user.email,
           displayName: result.user.displayName,
           photoURL: result.user.photoURL,
           emailVerified: result.user.emailVerified,
-          account_type: 'student'
+          account_type: 'student' //по умолчанию присваиваем тип аккаунта student
         }
-        localStorage.setItem('user', JSON.stringify(localUser));
-        this.SetUserData(localUser);
+        localStorage.setItem('user', JSON.stringify(localUser)); //сохраняем локально на устройстве данные
+        this.SetUserData(localUser); //отправляем данные в БД
 
       }).catch((error) => {
-        window.alert(error.message); //в случае ошибки отправляем error
+        window.alert(error.message); //в случае ошибки отправляем error в alert
       })
   }
 
   //-------------------------------------------Метод для авторизации существующего пользователя-------------------------------------------------
   onSignIn(email, password) {
-    return this.afAuth.signInWithEmailAndPassword(email, password)
-      .then((result) => {
-        this.afs.collection('users').doc(`${result.user.uid}`).get().toPromise()
-          .then(doc => {
+    return this.afAuth.signInWithEmailAndPassword(email, password) //возвращаеам Promise авторизации
+      .then((result) => { //по результату ищем по uid данные в бд на пользователя
+        this.afs.collection('users').doc(`${result.user.uid}`).get().toPromise() //еще один Promise, запрос в бд
+          .then(doc => { //получив документ
             if (!doc.exists) {
-              console.log('No such document!');
+              console.log('No such document!'); //проверяем его наличие
             } else {
-              console.log(doc.data());
-              this.userDBdata = doc.data();
-              this.userDBdata.emailVerified = result.user.emailVerified;
-              localStorage.setItem('userDB', JSON.stringify(this.userDBdata));
-              this.SetUserData(this.userDBdata);
-              this.isLogged = true;
+              this.userDBdata = doc.data(); //присваиваем данные
+              this.userDBdata.emailVerified = result.user.emailVerified; //присваиваем стату верификации email
+              localStorage.setItem('userDB', JSON.stringify(this.userDBdata)); //сохраняем локально данные БД
+              this.SetUserData(this.userDBdata); //Отправляем новые данные в БД
+              this.isLogged = true; //Статус аутентификации ставим на true
             }
           })
 
         this.ngZone.run(() => {
-          this.router.navigate(['/profile']);
+          this.router.navigate(['/profile']);//Перенаправляемся на профиль
         });
 
       }).catch((error) => {
-        window.alert(error.message)
+        window.alert(error.message) //В случае ошибки показываем alert
       })
   }
 
-
+  //-------------------------------------------Метод для отправки данных в БД-------------------------------------------------
   SetUserData(user) {
-    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);
-    const userData: User = {
+    const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`); // присваиваем ссылку на документ юзера
+    const userData: User = { //создаем локально в функции пользователя, присваивая все необходимые данные
       uid: user.uid,
       email: user.email,
       displayName: user.displayName,
@@ -104,14 +102,17 @@ export class AuthService {
       account_type: user.account_type
     }
 
-    return userRef.set(userData, { merge: true });
+    return userRef.set(userData, { merge: true }); //отправляем данные в бд, устанавливая свойство merge => true
+                                                   //что позволяет затрагивать только указанные данные, и не изменять другие данные
   }
 
+  //-------------------------------------------Метод для отправки данных в БД-------------------------------------------------
   SignOut() {
-    return this.afAuth.signOut().then(() => {
-      localStorage.removeItem('user');
-      this.isLogged = false;
-      this.router.navigate(['']);
+    return this.afAuth.signOut().then(() => { //производим выход из системы
+      localStorage.removeItem('user');   //Удаляем локальные данные с устройства
+      localStorage.removeItem('userDB'); //
+      this.isLogged = false; //Состояние авторизации false
+      this.router.navigate(['']); //выкидываем пользователя на гланый экран
     })
   }
 }

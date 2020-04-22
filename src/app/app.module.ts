@@ -7,7 +7,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './component/login/login.component';
 import { RegisterComponent } from './component/register/register.component';
-import { VerifyEmailComponent } from './component/verify-email/verify-email.component';
 import { ProfileComponent } from './component/profile/profile.component';
 import { CoursesComponent } from './component/courses/courses.component';
 
@@ -26,7 +25,6 @@ import { AdminProfileComponent } from './component/profile/admin-profile/admin-p
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    VerifyEmailComponent,
     ProfileComponent,
     CoursesComponent,
     AboutCourseComponent,
