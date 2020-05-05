@@ -14,16 +14,16 @@ export class TeachProfileComponent implements OnInit {
     //-----------------------------------------------Методы для работы с профилем преподавателя------------------------------------------------
 
   @ViewChild('alert') alert: ElementRef; //просматриваем элемент alert, чтобы добавляеть уведомления на сайте
-  public UserData: any; //данные по пользователю
+  public UserData: any = []; //данные по пользователю
   public MyCoursesList: any = []; //список курсов
-  public editState: boolean = false; //состояние изменения успеваемости 
+  public editState: boolean = false; //состояние изменения успеваемости
   public itemToEdit: any; //объект изменения успеваемости для сравнения
 
-  constructor(public authService: AuthService, //инжектим сервис аутентификации 
+  constructor(public authService: AuthService, //инжектим сервис аутентификации
               public route: Router) //инжектим для работы с роутингом
                { }
 
-  //-----------------------------------------------Вызывается при инициализации компонента teach-profile-------------------------------------------             
+  //-----------------------------------------------Вызывается при инициализации компонента teach-profile-------------------------------------------
   ngOnInit() {
     if (!this.authService.isLogged) { //проверка на состояние авторизации
       this.route.navigate(['/login']); //перебрасываем на логин форму
@@ -55,31 +55,35 @@ export class TeachProfileComponent implements OnInit {
 
   //-----------------------------------------------Методы обновления профиля--------------------------------------------------------------
 
-  UpdateProfile(name, surename, uid: string) {
+  async UpdateProfile(name, surename, uid: string): Promise<boolean> {
+      let bool = false;
       this.UserData.name = name; // присваимваем новые имя и фамилию
       this.UserData.surename = surename;
       localStorage.setItem('userDB',JSON.stringify(this.UserData)); //записываем новые локальные данные на устройстве
-      this.authService.afs.doc(`users/${uid}`).update({ //общаемся к документу в бд по uid, после чего обновляем name и surename
+      await this.authService.afs.doc(`users/${uid}`).update({ //общаемся к документу в бд по uid, после чего обновляем name и surename
         name: name,
         surename: surename
-      });
-      this.alert.nativeElement.innerHTML += //и вызываем уведомление, что информация обновлена
-        `<div class="alert alert-success" role="alert">
-      Информация успешно обновлена
-      </div>`
-      setTimeout(() => {
-        this.alert.nativeElement.innerHTML = ''; //после 3ех секунд удаляем уведомление
-      }, 3000);
-    
+      }).then(()=>{
+        bool = true;
+        this.alert.nativeElement.innerHTML += //и вызываем уведомление, что информация обновлена
+          `<div class="alert alert-success" role="alert">
+            Информация успешно обновлена
+            </div>`
+        setTimeout(() => {
+          this.alert.nativeElement.innerHTML = ''; //после 3ех секунд удаляем уведомление
+        }, 3000);
+      }).catch(err=>{bool = false});
+      return bool;
   }
 
   //-----------------------------------------------Методы получения курсов--------------------------------------------------------------
 
   async GetMyCourses() {
-    
+    let bool = false;
+    let boolCount = 0;
     this.MyCoursesList = []; //обнуляем список курсов
     //Promise для получения списка курсов, для которых пользователь является преподавателей
-    this.authService.afs.collection(`users/${this.UserData.uid}/myCourses`).get().toPromise()
+    await this.authService.afs.collection(`users/${this.UserData.uid}/myCourses`).get().toPromise()
     .then(Courses=>{
       //проходимся по каждому курсу в списке
       Courses.forEach(async doc=>{
@@ -118,8 +122,9 @@ export class TeachProfileComponent implements OnInit {
           })
         })
       })
-    })
-
+    bool = true;
+    }).catch(err=>{bool = false;boolCount++});
+    return  bool;
   }
 
   //-----------------------------------------------Методы работы с успеваемостю--------------------------------------------------------------

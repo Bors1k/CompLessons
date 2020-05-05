@@ -55,34 +55,41 @@ export class AdminProfileComponent implements OnInit {
 
    //-----------------------------------------------Методы обновления профиля--------------------------------------------------------------
 
-  UpdateProfile(name, surename, uid: string) {
+  async UpdateProfile(name, surename, uid: string): Promise<boolean> {
+    let bool = false;
     this.UserData.name = name; // присваимваем новые имя и фамилию
     this.UserData.surename = surename;
     localStorage.setItem('userDB',JSON.stringify(this.UserData)); //записываем новые локальные данные на устройстве
-    this.authService.afs.doc(`users/${uid}`).update({ //общаемся к документу в бд по uid, после чего обновляем name и surename
+    await this.authService.afs.doc(`users/${uid}`).update({ //общаемся к документу в бд по uid, после чего обновляем name и surename
       name: name,
       surename: surename
-    });
-    this.alert.nativeElement.innerHTML += //и вызываем уведомление, что информация обновлена
+    }).then(()=>{
+      bool = true;
+      this.alert.nativeElement.innerHTML += //и вызываем уведомление, что информация обновлена
       `<div class="alert alert-success" role="alert">
     Информация успешно обновлена
     </div>`
     setTimeout(() => {
       this.alert.nativeElement.innerHTML = ''; //после 3ех секунд удаляем уведомление
-    }, 3000);
+    }, 3000); 
+    }).catch(err=>{bool = false;});
+    return bool;
   }
 
   //-----------------------------------------------Методы получения списка пользователей----------------------------------------------------
 
-  GetUsersList(){
+  async GetUsersList(): Promise<boolean>{
+    let bool = false;
     this.UsersList = []; //обнуляем список пользователей
-    this.authService.afs.collection(`users`).get().toPromise() //Promise списка пользователей
+    await this.authService.afs.collection(`users`).get().toPromise() //Promise списка пользователей
     .then(Users=>{
+      bool = true;
       //проходимся по списку пользователей
       Users.forEach(user=>{
         this.UsersList.push(user.data()); //пушим данные в массив
       })
-    })
+    }).catch(err=>{bool = false;})
+    return bool;
   }
   
   
