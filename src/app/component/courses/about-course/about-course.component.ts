@@ -29,6 +29,7 @@ export class AboutCourseComponent implements AfterViewInit {
 
   CourseInfo: any; //объект с информацией по курсу
   Teachers: any = []; //список преподавателей
+  account_type: string = 'student';
   
   DataOnAdd: boolean = false; //переменная для отображения интерфейса добавления новой даты в расписании
   editState: boolean = false; //переменная для отображения интерфейса изменения имеющейся даты в расписании
@@ -50,6 +51,10 @@ export class AboutCourseComponent implements AfterViewInit {
       .then(doc => {
         this.CourseInfo = doc.data();
       })
+
+    if(this.authServ.userDBdata.account_type != undefined){
+      this.account_type = this.authServ.userDBdata.account_type;
+    }  
       
     //получаем список преподавателей и записываем в переменную
     this.afs.collection(`users`).get().toPromise()

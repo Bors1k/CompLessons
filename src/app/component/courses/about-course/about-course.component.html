@@ -8,7 +8,7 @@
         </div>
     </div>
 
-    <form *ngIf="authServ.userDBdata.account_type == 'admin' && CourseInfo as course" style="margin-top: 10px;">
+    <form *ngIf="account_type == 'admin' && CourseInfo as course" style="margin-top: 10px;">
       <div class="form-group">
         <label for="nameInput">Имя курса</label>
         <input type="text" class="form-control" id="nameInput" [(value)]="course.name" #inputName>

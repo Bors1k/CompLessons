@@ -24,7 +24,7 @@ export class AuthService {
     public ngZone: NgZone // NgZone service to remove outside scope warning
   ) {
 
-    
+    this.userDBdata = [];
     //Подписываемся на состояние аутентификации
     this.afAuth.authState.subscribe(user => {
       //Проверяем авторизованность, если мы авторизованны
